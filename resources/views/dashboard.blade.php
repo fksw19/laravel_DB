@@ -13,6 +13,7 @@
                     {{ __("You're logged in!") }}<br>
                     {{ __(Auth::user()->name)}}
                     {{ __(auth()->user()->name)}}
+                    {{ "ようこそ！"}}
                 </div>
             </div>
         </div>
