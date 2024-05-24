@@ -1,47 +1,47 @@
 <?php
 
+// App\Http\Controllers\Auth ネームスペースを使用します。
 namespace App\Http\Controllers\Auth;
 
+// Laravel コントローラークラスを使用します。
 use App\Http\Controllers\Controller;
+
+// ログインリクエストを使用します。
 use App\Http\Requests\Auth\LoginRequest;
+
+// リダイレクトレスポンスを使用します。
 use Illuminate\Http\RedirectResponse;
+
+// リクエストを使用します。
 use Illuminate\Http\Request;
+
+// 認証ファサードを使用します。
 use Illuminate\Support\Facades\Auth;
+
+// ビューを使用します。
 use Illuminate\View\View;
 
+// Controller クラスを継承した AuthenticatedSessionController クラスを定義します。
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * ログインビューを表示します。
      */
     public function create(): View
     {
+        // auth.login ビューを表示します。
         return view('auth.login');
     }
 
     /**
-     * Handle an incoming authentication request.
+     * 認証リクエストを処理します。
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // リクエストを認証します。
         $request->authenticate();
 
+        // セッションを再生成します。
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
-    }
-
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
-}
+        // インデントされた先（デフォルトの場
