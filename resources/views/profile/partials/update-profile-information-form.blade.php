@@ -16,7 +16,6 @@
     <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
-
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
@@ -46,6 +45,26 @@
                 </div>
             @endif
         </div>
+
+        <!-- 追加のフィールド -->
+        <div>
+            <x-input-label for="tel" :value="__('Phone Number')" />
+            <x-text-input id="tel" name="tel" type="tel" class="mt-1 block w-full" :value="old('tel', $user->tel)" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('tel')" />
+        </div>
+
+        <div>
+            <x-input-label for="postcode" :value="__('Postcode')" />
+            <x-text-input id="postcode" name="postcode" type="text" class="mt-1 block w-full" :value="old('postcode', $user->postcode)" autocomplete="postal-code" />
+            <x-input-error class="mt-2" :messages="$errors->get('postcode')" />
+        </div>
+
+        <div>
+            <x-input-label for="address" :value="__('Address')" />
+            <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $user->address)" autocomplete="address-line1" />
+            <x-input-error class="mt-2" :messages="$errors->get('address')" />
+        </div>
+        <!-- /追加のフィールド -->
 
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
