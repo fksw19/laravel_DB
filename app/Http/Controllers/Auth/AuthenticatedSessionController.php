@@ -44,4 +44,25 @@ class AuthenticatedSessionController extends Controller
         // セッションを再生成します。
         $request->session()->regenerate();
 
-        // インデントされた先（デフォルトの場
+        // インデントされた先（デフォルトの場合はダッシュボード）へリダイレクトします。
+        return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    /**
+     * 認証されたセッションを破棄します。
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        // 'web' ガードでログアウトします。
+        Auth::guard('web')->logout();
+
+        // セッションを無効にします。
+        $request->session()->invalidate();
+
+        // CSRF トークンを再生成します。
+        $request->session()->regenerateToken();
+
+        // '/' へリダイレクトします。
+        return redirect('/');
+    }
+}
