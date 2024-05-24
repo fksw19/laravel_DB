@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id();//id
+            $table->string('name');//ユーザー名
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->string('tel')->nullable(); // 電話番号
+            $table->string('postcode')->nullable(); // 郵便番号
+            $table->string('address')->nullable(); // 住所
+            $table->boolean('is_deleted')->default(false); // 論理削除用フラグ
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
