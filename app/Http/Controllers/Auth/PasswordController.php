@@ -11,19 +11,22 @@ use Illuminate\Validation\Rules\Password;
 class PasswordController extends Controller
 {
     /**
-     * Update the user's password.
+     * ユーザーのパスワードを更新します。
      */
     public function update(Request $request): RedirectResponse
     {
+        // フォームの入力値をバリデーションします。
         $validated = $request->validateWithBag('updatePassword', [
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'current_password' => ['required', 'current_password'], // 現在のパスワードのバリデーション
+            'password' => ['required', Password::defaults(), 'confirmed'], // 新しいパスワードのバリデーション
         ]);
 
+        // ユーザーモデルを更新し、新しいパスワードを保存します。
         $request->user()->update([
             'password' => Hash::make($validated['password']),
         ]);
 
+        // 直前のページにリダイレクトし、ステータスをセットします。
         return back()->with('status', 'password-updated');
     }
 }

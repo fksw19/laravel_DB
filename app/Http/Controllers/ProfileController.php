@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * ユーザーのプロフィール編集フォームを表示します。
      */
     public function edit(Request $request): View
     {
@@ -22,39 +22,46 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * ユーザーのプロフィール情報を更新します。
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // フォームのバリデーション済みデータをユーザーモデルに適用します。
         $request->user()->fill($request->validated());
 
+        // メールアドレスが変更された場合は、メール確認済みフラグをリセットします。
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
+        // ユーザーモデルを保存します。
         $request->user()->save();
 
+        // プロフィール編集ページにリダイレクトし、ステータスをセットします。
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
+     * ユーザーアカウントを削除します。
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // ユーザーアカウント削除のためのバリデーションを行います。
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
-
+        // ログアウト処理を行います。
         Auth::logout();
 
-        $user->delete();
+        // ユーザーを削除します。
+        $request->user()->delete();
 
+        // セッションを無効化し、新しいトークンを生成します。
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // ホームページにリダイレクトします。
         return Redirect::to('/');
     }
 }

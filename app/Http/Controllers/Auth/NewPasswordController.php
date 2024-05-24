@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class NewPasswordController extends Controller
 {
     /**
-     * Display the password reset view.
+     * パスワードリセット画面を表示します。
      */
     public function create(Request $request): View
     {
@@ -23,36 +23,37 @@ class NewPasswordController extends Controller
     }
 
     /**
-     * Handle an incoming new password request.
+     * 新しいパスワードリクエストを処理します。
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        // フォームの入力値をバリデーションします。
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
+        // パスワードのリセットを試みます。成功した場合はユーザーモデルに更新を行い、データベースに保存します。
+        // 失敗した場合はエラーメッセージを返します。
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
+                // パスワードをハッシュ化してユーザーモデルに設定し、トークンを再生成します。
                 $user->forceFill([
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
+                // パスワードリセットイベントを発行します。
                 event(new PasswordReset($user));
             }
         );
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
+        // パスワードが正常にリセットされた場合、ログインページにリダイレクトします。
+        // エラーがある場合は、エラーメッセージと共に元のページにリダイレクトします。
         return $status == Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : back()->withInput($request->only('email'))

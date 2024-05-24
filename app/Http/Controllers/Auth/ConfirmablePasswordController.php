@@ -11,30 +11,30 @@ use Illuminate\View\View;
 
 class ConfirmablePasswordController extends Controller
 {
-    /**
-     * Show the confirm password view.
-     */
+    // パスワード確認画面を表示します。
     public function show(): View
     {
         return view('auth.confirm-password');
     }
 
-    /**
-     * Confirm the user's password.
-     */
+    // ユーザーのパスワードを確認します。
     public function store(Request $request): RedirectResponse
     {
+        // ユーザーの入力したパスワードを認証します。
         if (! Auth::guard('web')->validate([
             'email' => $request->user()->email,
             'password' => $request->password,
         ])) {
+            // 認証が失敗した場合、エラーメッセージを投げます。
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
             ]);
         }
 
+        // パスワード確認が成功した場合、セッションに確認時刻を記録します。
         $request->session()->put('auth.password_confirmed_at', time());
 
+        // ダッシュボードへリダイレクトします。
         return redirect()->intended(route('dashboard', absolute: false));
     }
 }
