@@ -18,6 +18,9 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'tel' => ['required', 'string', 'max:15'], // 追加のフィールドのバリデーションルール
+            'postcode' => ['required', 'string', 'max:20'], // 追加のフィールドのバリデーションルール
+            'address' => ['required', 'string', 'max:255'], // 追加のフィールドのバリデーションルール
         ];
     }
 }
